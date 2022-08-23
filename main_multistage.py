@@ -29,7 +29,7 @@ tightness = [0.8,1.2]
 #horizon of the simulation
 horizon = 12
 #fosva approximation rounds and gradient-step
-n_it_fosva = 10
+n_it_fosva = 3
 step_derivative = 5
 
 for sampler in samplers:
@@ -134,7 +134,7 @@ for sampler in samplers:
                 done = False
                 obs = env.reset()
                 #agent setting
-                if k == 'Cave':
+                if k == 'FOSVA':
                     stoch_agent = TwoStageAgent(env, AtoRP_approx_comp(**settings), demand_known) #cave is a twoStageAgent
                 elif k == 'MP' or k == 'MS3' or k == 'MS3+' or k == 'MS_binary': #multiStages
                     if k == 'MP':
@@ -200,6 +200,6 @@ for sampler in samplers:
 
 
 #Plot them all
-#printMultiHorizon(results, horizon, save = False)
+#printMultiHorizon(results, horizon)
 #Plot only a subset 
-printMultiHorizon(results.item(), horizon, listToPlot = ['MS3','FOSVA'])
+printMultiHorizon(results.item(), horizon, listToPlot = ['MS3','MP'])

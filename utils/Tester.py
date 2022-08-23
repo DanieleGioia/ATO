@@ -105,7 +105,6 @@ class Tester():
 
         self.model.update()
         self.model.setParam('OutputFlag', 0)
-        self.model.setParam('LogFile', './logs/gurobi.log')
         self.model.optimize()
         obj = self.model.getObjective().getValue()
         

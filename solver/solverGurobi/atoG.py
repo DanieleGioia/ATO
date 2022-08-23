@@ -26,7 +26,6 @@ class AtoG(Ato):
         #    model.setParam('OutputFlag', 1)
         else:
             model.setParam('OutputFlag', 0)
-        model.setParam('LogFile', './logs/gurobi.log')
         # model.write("./logs/model.lp")
         if verbose:
             print ('Solving a model with: '+str(model.NumConstrs)+' constraints')
