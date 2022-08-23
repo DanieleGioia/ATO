@@ -112,7 +112,9 @@ AtoG.py works as interface (super-class) of the assembly-to-order solvers in Gur
 
 Here it follows a table summing up the principal charateristics of the available solvers. All of them but atoEV and atoRPMultiStage are Two-stage environments, the latter works with several kind of scenario trees. The classes inherits from AtoG.py and defines how to populate the model thanks to polymorphism.
 
-<span style="color:red"> **For a detailed formulation of the available models please refer to the cited papers.** </span>
+```diff
+ !For a detailed formulation of the available models please refer to the cited papers.
+ ```
 
 | Solver | Charateristics |
 | ------------- |:-------------:|
