@@ -1,2 +1,13 @@
 gurobipy
 numpy
+time
+matplotlib
+os
+seaborn
+pandas
+itertools
+tqdm
+networkx
+abc
+json
+pickle

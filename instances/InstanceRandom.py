@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from copy import error
 import numpy as np
 import matplotlib.pyplot as plt
 from instances.Instance import Instance
