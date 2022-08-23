@@ -1,0 +1,8 @@
+{
+    "CVaR_alpha": 0.95,
+    "CVaR_expected_profit":0,
+    "atoProfitCVaR_alpha": 0.95,
+    "atoProfitCVaR_limit": 0,
+    "n_time_steps": 5,
+    "branching_factors": [7, 4, 3]
+}
