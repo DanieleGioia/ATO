@@ -21,10 +21,6 @@
     "component_cost": [1, 50],
     "tightness": 0.8,
     "initial_inventory": [0,0,0,0,0,0,0,0,0,0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    "dict_markdown":{
-        "bounds": [-0.05, 0.7],
-        "gozintoWeight": 0.5
-    },
     "lost_sales":0.1,
     "holding_costs":0.2
 }
