@@ -3,7 +3,7 @@ import numpy as np
 
 class MultiStageSampler(Sampler):
     """
-    MultiStage sampler. It adapts the other samplers in un multistage setting.
+    MultiStage sampler. It adapts the other samplers to a multistage setting.
     It is possible to set seasonality. The number of scenarios is now the horizon.
     params:
     -multiplicativeSeas: array of %_variation with seasonality length e.g. [1,1.4,0.6]

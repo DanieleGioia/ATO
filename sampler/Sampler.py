@@ -7,7 +7,7 @@ class Sampler():
     @abstractmethod
     def __init__(self, dict_distr: dict):
         """
-        Setting contains a dictionary with the parameters
+        Dict_distr contains a dictionary with the parameters
         """    
 
     @abstractmethod

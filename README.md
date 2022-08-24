@@ -134,6 +134,18 @@ The instance can also be read from a json file through the **InstanceRead** clas
 
 ## Sampler & scenarios
 
+Once an instance of the problem is formulated, the main source of uncertainty, according to our assumption on the ATO problem, is the demand for each end item. Specifically, it is uncertain and possibly subject to seasonality. 
+
+The **Sampler** class defines the mandatory methods for the simulation of the demand. Generally speaking, given a number of scenarios, the sampler returns a random demand per end item per scenario, following different sampling methodologies.\
+We list the available sampler and their characteristics hereafter.
+
+| Sampler | Characteristics |
+| ------------- |:-------------:|
+|GaussianSampler |  The Gaussian sampler generates the demand according to **independent** and identically distributed Gaussian random variables with mean ("mu") and standard deviation ("sigma") specificated in "./etc/sampler_Params".
+|BiGaussianSampler| The Gaussian sampler is available also in a bi-modal variant, where the additional mean ("mu2"), standard deviation ("sigma2") and mixing factor ("p1") have to be specified.
+|HierarchicalSampler| This sampler consider a process composed by two nested steps, such that a family-correlation is generated. Firstly, we independently sample the aggregated demand for the entire family, then the overall demand per family is split among the items belonging to the family according to weights randomly sampled from a Dirichlet distribution.
+|MultiStageSampler| It adapts the other samplers to a multistage setting. It generates as scenarios a fixed horizon number of sampled demand per end item. It is possible to set seasonality in a multiplicative ("multiplicativeSeas") or additive ("additiveSeas") way w.r.t. the mean and standard deviation of the employed distribution.
+
 ## Solver
 
 Several solvers are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\ Ato.py summarizes what a generic solver/problem should contain in its methods.\
