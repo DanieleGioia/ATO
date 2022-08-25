@@ -18,6 +18,8 @@ class AtoG(Ato):
         pass
 
     def get_solution(self, instance, model, time_limit=None, gap=None, verbose=False):
+        #This method solves the actual model, while the different subclasses 
+        #modify the population method (thus the characteristics of a particular model)
         if gap:
             model.setParam('MIPgap', gap)
         if time_limit:

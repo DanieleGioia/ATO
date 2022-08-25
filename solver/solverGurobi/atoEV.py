@@ -5,7 +5,7 @@ from solver.solverGurobi.atoG import AtoG
 
 class AtoEV(AtoG):
     """
-    Standard version of the ATO problem, see the companion paper/thesis for the explicit model
+    Single stage ATO problem that maximizes the expected net profit of the problem without a recourse function
     """
     def __init__(self,**setting):        
         super().__init__(**setting)
@@ -21,7 +21,7 @@ class AtoEV(AtoG):
             vtype=grb.GRB.CONTINUOUS,
             name='X'
         )
-
+        #sold items ON AVERAGE
         Y = model.addMVar(
             shape=instance.n_items,
             vtype=grb.GRB.CONTINUOUS,
@@ -34,9 +34,8 @@ class AtoEV(AtoG):
         expr -= instance.costs @ X
         model.setObjective(expr, grb.GRB.MAXIMIZE)
 
-        # Capacity constraint for each machine
-        model.addConstr(Y <= scenarios.mean(1))
-        model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines)
-        model.addConstr(instance.gozinto.T @ Y <= X)
+        model.addConstr(Y <= scenarios.mean(1)) #number of sold items cannot be more than the AVERAGE demand
+        model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines) #machine availability constraint
+        model.addConstr(instance.gozinto.T @ Y <= X) #components and end items connection
         model.update()
         return model

@@ -8,7 +8,7 @@ class AtoRP_approx_comp(AtoG):
     """
     ATO problem with recourse
     SAA methodology
-    This applies the approximate value of the inventory
+    This applies the first order approximate value of the inventory (FOSVA)
 
     The setting contains a list (one element per end item) of
     dictionaries with fields:
@@ -16,6 +16,10 @@ class AtoRP_approx_comp(AtoG):
     -v -> slope of each breakpoint
 
     The number of breakpoints MUST be the same for each item
+
+    For further details please refer to: 
+    # "Rolling horizon policies for multi-stage stochastic assemble-to-order problems",
+    # by Daniele Giovanni Gioia and Edoardo Fadda and Paolo Brandimarte.
     """
     def __init__(self,**setting):
         super().__init__(**setting)
@@ -133,7 +137,7 @@ class AtoRP_approx_comp_v(AtoG):
     """
     ATO problem with recourse
     SAA methodology
-    This optimization computes the approximate valueof the inventory
+    This optimization allows the computation of the approximate value of the inventory by finite differences
     """
     def __init__(self,**setting):
         super().__init__(**setting)
@@ -161,13 +165,6 @@ class AtoRP_approx_comp_v(AtoG):
             name='Y'
         )
 
-        # #production variable bis
-        # Y_b = model.addMVar(
-        #     shape=(instance.n_items, n_scenarios),
-        #     vtype=grb.GRB.CONTINUOUS,
-        #     name='Y_bis'
-        # )
-
         #production variable
         Z = model.addMVar(
             shape=(instance.n_components, n_scenarios),
@@ -187,12 +184,6 @@ class AtoRP_approx_comp_v(AtoG):
             for s in range(n_scenarios)
         )
 
-        # #sold items bis
-        # expr += pi_s * sum(
-        #     instance.profits @ Y_b[:, s]
-        #     for s in range(n_scenarios)
-        # )
-
         #Lost sales
         expr-= pi_s * sum(
             instance.lost_sales @ L[:, s]
@@ -210,12 +201,8 @@ class AtoRP_approx_comp_v(AtoG):
 
         model.setObjective(expr, grb.GRB.MAXIMIZE)
 
-        # Capacity constraint for each machine
-        #average_demand = np.average(scenarios, axis=1) #da usare sulle Z?
-        #model.addConstrs((Y_b[j, :] <= average_demand[j] for j in items), name="demand_constr_bis")
-        model.addConstrs((Y[j, :] + L[j, :] == scenarios[j, :] for j in items), name="demand_constr")
-        model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines)
-        model.addConstrs(instance.gozinto.T @ Y[:, s] + Z[:, s] == X + I_0 for s in range(n_scenarios))
-        #model.addConstrs(instance.gozinto.T @ Y_b[:, s]  <= Z[: ,s] for s in range(n_scenarios))
+        model.addConstrs((Y[j, :] + L[j, :] == scenarios[j, :] for j in items), name="demand_constr") #number of sold items cannot be more than the demand
+        model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines) # Capacity constraint for each machine
+        model.addConstrs(instance.gozinto.T @ Y[:, s] + Z[:, s] == X + I_0 for s in range(n_scenarios))  #components and end items connection
         model.update()
         return model

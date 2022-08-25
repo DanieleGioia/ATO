@@ -11,7 +11,7 @@ from itertools import chain
 
 def piecewise_function(x, breaks, slopes):
     '''
-    Premilimary function for printCave
+    A piecewise linear function from breaks a slopes
     '''
     # ADDING CONDITION FOR CONTINUITY
     coeff = [(slopes[0], 0)]

@@ -6,7 +6,7 @@ from sampler.Sampler import Sampler
 
 class InstanceRandom(Instance):
     """
-    This class generate an instance scenario completely random. All the necessary 
+    This class generates an instance scenario completely random. All the necessary 
     parameters are listed in the dictionary of the setting.
     """
     def __init__(self, setting: dict , sampler: Sampler):
@@ -66,9 +66,8 @@ class InstanceRandom(Instance):
 
     def _getHoldingCosts(self):
         # GENERATE HOLDING COSTS
-        # costant
-        # self.holding_costs = self.holding_costsPerc * np.mean(self.costs)
-        self.holding_costs = self.holding_costsPerc * self.costs
+        # self.holding_costs = self.holding_costsPerc * np.mean(self.costs) #constant w.r.t. the mean cost 
+        self.holding_costs = self.holding_costsPerc * self.costs #based on the single cost of a component
 
     def _getProfit(self):
         # GENERATE PROFITS
@@ -102,7 +101,7 @@ class InstanceRandom(Instance):
         self.profits = np.around(self.profits, decimals=2)
 
     def _getLostSales(self):
-        # GENERATE LOST SALES
+        # GENERATE LOST SALES w.r.t. the profits
         self.lost_sales = self.lost_SalesPerc * self.profits
 
 
@@ -113,6 +112,7 @@ class InstanceRandom(Instance):
         self.availability = self.tightness * (self.processing_time.T).dot(component_requested)
         return self.availability
 
+    #overrided method
     def plotGozinto(self):
 
         font = {'family' : 'normal',
@@ -137,20 +137,8 @@ class InstanceRandom(Instance):
 
     def _getGozinto(self):
         self.gozinto = np.zeros((self.n_items, self.n_components))
-        # particular style of gozinto
-        
-        if self.gozintoParams['name'] == "nested":
-            self.gozinto = np.tril(
-                np.ones((self.n_items, self.n_components))
-            )
-        elif self.gozintoParams['name'] == "W_style":
-            for i in range(self.n_items):
-                self.gozinto[i][i] = 1
-                self.gozinto[i][min(i + 1, self.n_components-1)] = 1
-        elif self.gozintoParams['name'] == "M_style":
-            print("M_style not supported")
-            quit()
-        elif self.gozintoParams['name'] == "standard":
+        # we plan to add other kinds of gozinto matrices.
+        if self.gozintoParams['name'] == "standard":
             # OUTCAST
             start_row = self.n_items - self.gozintoParams['n_outcast_items']
             end_row = self.n_items
@@ -191,6 +179,9 @@ class InstanceRandom(Instance):
                         )
                 start_row = end_row
                 start_col = end_col
+        else:
+            print("Gozinto style not supported")
+            quit()
 
 
 

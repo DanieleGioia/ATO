@@ -6,6 +6,10 @@ from scenarioTree import ScenarioTree
 from scenarioReducer import *
 
 class DummyScenarioReducer(Scenario_reducer):
+    """
+    Fake scenario reducer that is employed when the number of requested branch is just 1
+    When this happen, the reduction boils down to the average of the available data
+    """   
     def __init__(self, data):
         self.data = data
 
@@ -31,9 +35,11 @@ class AtoRPMultiStage(AtoG):
         self.current = 0 # only needed if seasonal
 
     def seasonalize(self,seasonality):
+        #saves the seasonality factors
         self.seas = seasonality
     
     def updateClock(self):
+        # the clock is necessary to use the right data in case of multiple stages with seasonality
         self.current += 1
 
     def populate(self, instance, scenarios):
@@ -41,20 +47,23 @@ class AtoRPMultiStage(AtoG):
         machines = range(instance.n_machines)
 
         FFreducers = []
-        for i in range(len(self.branching_factors)):
+        for i in range(len(self.branching_factors)): #the length of the horizon is given by the branching factors specification
+            #selection of the data w.r.t. the seasonality. (We assume that we cannot use data from months with peaks of demand to decide on months with low demand)
             selected_data = scenarios[:,np.arange( (self.current + i) % self.seas ,len( scenarios[0,:]), self.seas)]
+            #Reduction of the number of nodes according to a W2 fast forward scenario reducer 
             if self.branching_factors[i] > 1:
                 FFreducers.append(
                     Fast_forward_W2(
                         selected_data
                     )
                 )
-            else:
+            else: #here the reduction boils down to the average
                 FFreducers.append(
                     DummyScenarioReducer(
                         selected_data
                     )
                 )
+        #scenario tree building
         scenario_tree = ScenarioTree(
             name='tree1',
             branching_factors=self.branching_factors,
@@ -66,48 +75,56 @@ class AtoRPMultiStage(AtoG):
         # ScenarioTree()
         nodes = range(scenario_tree.n_nodes)
 
+        #initial inventory
         I_0 = np.array(instance.inventory)
         # model initialisation
         model = grb.Model(self.name)
-
+        #production decision: number of components (root node)
         X = model.addMVar(
             shape=(instance.n_components),
             vtype=grb.GRB.CONTINUOUS,
             name='X'
         )
+        #dummy decision made on future stages (one for each node of the tree)
         X_ms = model.addMVar(
             shape=(instance.n_components, scenario_tree.n_nodes),
             vtype=grb.GRB.CONTINUOUS,
             name='X_ms'
-        )
+        ) 
+        # sold items per node
         Y = model.addMVar(
             shape=(instance.n_items, scenario_tree.n_nodes),
             vtype=grb.GRB.CONTINUOUS,
             name='Y'
         )
+        # lost sales per node
         L = model.addMVar(
             shape=(instance.n_items, scenario_tree.n_nodes),
             vtype=grb.GRB.CONTINUOUS,
             name='L'
         )
+        #inventory variable
         I = model.addMVar(
             shape=(instance.n_components, scenario_tree.n_nodes),
             vtype=grb.GRB.CONTINUOUS,
             name='I'
         )
-
+        #profits 
         expr = sum(
             scenario_tree.nodes[n]['prob'] * instance.profits @ Y[:, n]
             for n in nodes
         )
+        # lost sales cost
         expr -= sum(
             scenario_tree.nodes[n]['prob'] * instance.lost_sales @ L[:, n]
             for n in nodes
         )
+        # components cost
         expr -= sum(
             scenario_tree.nodes[n]['prob'] * instance.costs[:] @ X_ms[:, n]
             for n in nodes
         )
+        # holding costs
         expr -= sum(
             scenario_tree.nodes[n]['prob'] * instance.holding_costs[:] @ I[:, n]
             for n in nodes
@@ -123,6 +140,7 @@ class AtoRPMultiStage(AtoG):
         # Initial sondition
         model.addConstr(I[:, 0] == I_0[:], name="initial_condition")
 
+        #root node definition
         model.addConstr(X == X_ms[:, 0], name="X_def")
         
         # Evolution

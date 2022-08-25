@@ -32,10 +32,13 @@ class Sampler():
         self.nItems = howMany
     
     ###Methods to override
+    #They serve to modify the parameters of a particular distribution according to the seasonality.
     def rescaleAdditive(self,seasonValue):
         raise ValueError('Additive rescaling not available in this sampler')
     def rescaleMultiplicative(self,seasonValue):
         raise ValueError('Multiplicative rescaling not available in this sampler')
+    #After a seasonality adaptation, it is possible to revert the 
+    #parameters of the distribution to the original ones.
     def revertAdditive(self,seasonValue):
         raise ValueError('Additive revert not available in this sampler')
     def revertMultiplicative(self,seasonValue):

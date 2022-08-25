@@ -13,6 +13,7 @@ class Instance():
     def __init__(self, setting: dict, sampler: Sampler):
         """
         Setting contains a dictionary with the parameters
+        The sampler is required to set the machine availability
         """
         self.name = None
         self.sim_setting = setting
@@ -54,6 +55,7 @@ class Instance():
         pass
 
     def set_seed(self,seed = None):
+        #set the seed of the psuedo-random generators
         self.seed = seed
         np.random.seed(seed)
 
@@ -61,7 +63,7 @@ class Instance():
         plt.matshow(self.gozinto)
         plt.xlabel('components')
         plt.ylabel('items')
-        plt.savefig("./results/gozmatrix.pdf")
+        plt.savefig("./gozmatrix.pdf")
         plt.close()
 
     def print_on_file(self, name_instance=None):

@@ -134,7 +134,7 @@ The instance can also be read from a json file through the **InstanceRead** clas
 
 ### Sampler & scenarios
 
-Once an instance of the problem is formulated, the main source of uncertainty, according to our assumption on the ATO problem, is the demand for each end item. Specifically, it is uncertain and possibly subject to seasonality. 
+Once an instance of the problem is formulated, the main source of uncertainty, according to our assumption on the ATO problem, is the demand for each end item. Specifically, it is uncertain and possibly subject to seasonality.
 
 The **Sampler** class defines the mandatory methods for the simulation of the demand. Generally speaking, given a number of scenarios, the sampler returns a random demand per end item per scenario, following different sampling methodologies.\
 We list the available sampler and their characteristics hereafter.

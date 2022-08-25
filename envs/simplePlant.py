@@ -3,6 +3,8 @@ import gym
 import numpy as np
 from utils.Tester import Tester
 
+# This class implements the notation of the gym library.
+# we refer to https://www.gymlibrary.dev/ for further details.
 
 class SimplePlant(gym.Env):
 
@@ -29,12 +31,13 @@ class SimplePlant(gym.Env):
         self.demand = self.scenario_demand[:, self.current_step]
 
     def _take_action(self, action, inventory_level, demand):
+        #simulation of the production step when the decision has been made.
         profit, item_produced = self.tester.produce(self.instance, action, demand)
 
         self.production = item_produced
         
         component_used = (item_produced.T).dot(self.instance.gozinto)
-        # NB: element wise modification keep reference
+        # NB: element wise modification keeps reference
         for i in range(self.instance.n_components):
             inventory_level[i] = inventory_level[i] + action[i] - component_used[i]
 

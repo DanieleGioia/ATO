@@ -4,11 +4,10 @@ import numpy as np
 
 class HierarchicalSampler(SamplerDependencies):
     """
-    Hierarchical distribution with one distribution set to sample the single family value
-    and a Dirichlet distribution to divide the demand per family within its items.
+    Hierarchical distribution with one first step to sample the single family value
+    and a second one with a Dirichlet distribution to divide the demand per family within its items.
 
-    The class require a Gaussian Sampler class input for the families and the parameters are assumed to be set 
-    on the dictionary
+    The class require a Gaussian Sampler class input for the families and the parameters must be provided by a dictionary
 
     The class requires the gozinto settings to correlate the families
     """
@@ -19,12 +18,13 @@ class HierarchicalSampler(SamplerDependencies):
         super().__init__(dict_distr,dict_gozinto)
         self.name = "Hierarchical_Sampler"
         self.famSampler = familyDistr
-        inFamCann = dict_distr['cannibalization'] # must be int and ge than 1
+        inFamCann = dict_distr['cannibalization'] # must be int and \ge than 1, it guides the dirichlet distriution
         #Inner distributions per family generation
         self.dirichParams = []
         for num_fam in self.itemsPerFamily:
+            #random selection of the parameters for the Dirichlet distribution
             self.dirichParams.append(np.random.choice(inFamCann*num_fam,num_fam)+1)
-    #Setter e getter
+    #Setter e getter of the Dirichlet distribution
     def getDirichFamily(self,familyIndx:int):
         return self.dirichParams[familyIndx]
     def setDirichFamily(self,familyIndx:int,values:np.array):
@@ -33,6 +33,7 @@ class HierarchicalSampler(SamplerDependencies):
         self.dirichParams[familyIndx] = values
 
     #Variation on the inner distributions of the families
+    #This function can be employed for sensitivity analyses
     def shuffleInnerFamiliesShare(self,perc = 0.20,verbose = False):
         if verbose:
             print('Old inner share per family')
@@ -50,6 +51,8 @@ class HierarchicalSampler(SamplerDependencies):
 
 
     #overrided 
+    #The modifications of the parameters of the distribution of the families 
+    #rely on the methods of the inner samplers.
     def rescaleAdditive(self,seasonValue):
         self.famSampler.rescaleAdditive(seasonValue)
     def rescaleMultiplicative(self,seasonValue):
@@ -70,13 +73,13 @@ class HierarchicalSampler(SamplerDependencies):
         start_out = self.nItems - self.outcastItems
         end_out = self.nItems
         smpl[start_out:end_out,:] = self.famSampler.sample(n_scenarios)
-        # ITEMS IN FAMILY
+        # ITEMS of the FAMILY
         start_row = 0
         for i,num_fam in enumerate(self.itemsPerFamily):
             self.famSampler.setNItems(num_fam)
             totalDemandFamily = self.famSampler.aggregateSampler(n_scenarios)
             end_row = start_row + num_fam
-            idioValues = np.random.dirichlet(self.dirichParams[i],size=n_scenarios).T
+            idioValues = np.random.dirichlet(self.dirichParams[i],size=n_scenarios).T #weight of the single item
             smpl[start_row:end_row,:] = np.clip( idioValues*totalDemandFamily,self.low,self.high)
             start_row = end_row
         return smpl

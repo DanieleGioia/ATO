@@ -5,7 +5,8 @@ from solver.solverGurobi.atoG import AtoG
 
 class AtoRP(AtoG):
     """
-    Standard version of the ATO problem, see the companion paper/thesis for the explicit model
+    Standard Two-Stage stochastic LP model with recourse of the ATO problem,
+    treated with the well-konwn Sampling Average Approximation (SAA).
     """
     def __init__(self,**setting):
         super().__init__(**setting)
@@ -24,28 +25,28 @@ class AtoRP(AtoG):
             vtype=grb.GRB.CONTINUOUS,
             name='X'
         )
-
+        #sold items in the second stage per scenario
         Y = model.addMVar(
             shape=(instance.n_items, n_scenarios),
             vtype=grb.GRB.CONTINUOUS,
             name='Y'
         )
-        # crude Montecarlo is deployed (room for generalisation)
+        # SAA plain probabilities 
         pi_s = 1.0 / (n_scenarios + 0.0)
         #
         expr = pi_s * sum(
             instance.profits @ Y[:, s]
             for s in range(n_scenarios)
-        )
+        )#second stage profits 
 
         # first stage costs
         expr -= instance.costs[:] @ X
 
         model.setObjective(expr, grb.GRB.MAXIMIZE)
 
-        # Capacity constraint for each machine
-        model.addConstrs((Y[j, :] <= scenarios[j, :] for j in items), name="demand_constr")
-        model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines)
-        model.addConstrs(instance.gozinto.T @ Y[:, s] <= X + I_0 for s in range(n_scenarios))
+    
+        model.addConstrs((Y[j, :] <= scenarios[j, :] for j in items), name="demand_constr") #number of sold items cannot be more than the demand
+        model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines)  #machine availability constraint
+        model.addConstrs(instance.gozinto.T @ Y[:, s] <= X + I_0 for s in range(n_scenarios)) #components and end items connection
         model.update()
         return model
