@@ -8,7 +8,7 @@ The code comprises several classes and two main(s) as examples. Those are suppor
 
 Multi-Stage
 
-```TeX
+```Bibtex
 @misc{GioiaPrePrint,
   title={Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
   author={Daniele Giovanni Gioia and Edoardo Fadda and Paolo Brandimarte},
@@ -19,7 +19,7 @@ Multi-Stage
 
 Two-Stage
 
-```TeX
+```Bibtex
 @incollection{Fadda2022,
   year = {2022},
   publisher = {Springer International Publishing},
@@ -30,7 +30,7 @@ Two-Stage
 }
 ```
 
-# Code Structure
+## Code Structure
 
 ```bash
 |____solver
@@ -101,7 +101,7 @@ Two-Stage
 
 ```
 
-## Instace generation
+### Instace generation
 
 Each instance of the ATO problem comprises:
 
@@ -132,7 +132,7 @@ All the Instance classes inherit a Gozinto matrix print function that associates
 
 The instance can also be read from a json file through the **InstanceRead** class.
 
-## Sampler & scenarios
+### Sampler & scenarios
 
 Once an instance of the problem is formulated, the main source of uncertainty, according to our assumption on the ATO problem, is the demand for each end item. Specifically, it is uncertain and possibly subject to seasonality. 
 
@@ -146,14 +146,18 @@ We list the available sampler and their characteristics hereafter.
 |HierarchicalSampler| This sampler consider a process composed by two nested steps, such that a family-correlation is generated. Firstly, we independently sample the aggregated demand for the entire family, then the overall demand per family is split among the items belonging to the family according to weights randomly sampled from a Dirichlet distribution.
 |MultiStageSampler| It adapts the other samplers to a multistage setting. It generates as scenarios a fixed horizon number of sampled demand per end item. It is possible to set seasonality in a multiplicative ("multiplicativeSeas") or additive ("additiveSeas") way w.r.t. the mean and standard deviation of the employed distribution.
 
-## Solver
+When dealing with a fixed large number of scenarios, e.g., from a data-driven approach, it is possible to reduce them with the **scenarioReducer** classes. This class implements a scenario reducer that follows a Fast Forward (FF) technique with a 2-norm metric.\
+It is automatically implemented in the branching process of the scenario tree building for the **atoRPMultiStage** solver, where the branching factor leads the number of scenarios to optimize and retain.
 
-Several solvers are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\ Ato.py summarizes what a generic solver/problem should contain in its methods.\
+### Solver
+
+Several solvers are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\
+Ato.py summarizes what a generic solver/problem should contain in its methods.\
 AtoG.py works as interface (super-class) of the assembly-to-order solvers in Gurobi. Here the population (Gurobi model construction) and the solution process (that can relies on different algorithms) are separated.
 
 Here it follows a table summing up the principal characteristics of the available solvers. All of them but atoEV and atoRPMultiStage are Two-stage environments, the latter works with several kind of scenario trees. The classes inherits from AtoG.py and defines how to populate the model thanks to polymorphism.
 
-<dev style="color:red"> **For a detailed formulation of the available models please refer to the cited papers.** </dev>
+🔴  **For a detailed formulation of the available models please refer to the cited papers.** 🔴
 
 | Solver | Characteristics |
 | ------------- |:-------------:|
@@ -165,6 +169,13 @@ Here it follows a table summing up the principal characteristics of the availabl
 | atoRPMultiStage  | This model represents the demand uncertainty by means of a scenario tree with personalizable length and branching factors trough the **branching_factors** vector in './etc/ato_Params'. It supports seasonality throughout the scenario and can rely on multiple nodes per time-steps as well as average approximations. An extended discussion of the model is presented in our paper "**Rolling horizon policies for multi-stage stochastic assemble-to-order problems**".
 | atoRP_approx_comp  | This class contains two sub-classes. On the one hand, **AtoRP_approx_comp_v** serves to approximate the value of the initial inventory according to a first-order analysis on a Two-Stage setting. On the other hand, **AtoRP_approx_comp** applies the approximate value of the inventory following a linear piecewise value function defined by its breakpoints and slopes.
 
-## FOSVA
+### FOSVA
 
-## Agents & Envs
+***TODO***  
+
+### Agents & Envs
+
+When dealing with a multistage environment, we consider a sequential approach based on the [Gym](https://www.gymlibrary.dev/) framework.
+
+An **atoAgent** is responsible for the communication between the dynamics of the problem and the sequential optimization. Specifically, both **twoStageAgent** and **multiStageAgent** decide an action (a production schedule) for each specific time step, following the information about the current state of the system provided by a class of the *envs* family (e.g., **simplePlant**). We refer to the [Gym](https://www.gymlibrary.dev/) documentation for a deeper analysis of the observation/action/step sequentiality.\
+Focusing on the agents, intuitively, the **twoStageAgent** is made to deal with the Two-Stage solvers, while **multiStageAgent** allows only for the AtoRPMultiStage class, making an explicit model for the seasonality possible.
