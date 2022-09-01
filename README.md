@@ -161,8 +161,8 @@ Here it follows a table summing up the principal characteristics of the availabl
 
 | Solver | Characteristics |
 | ------------- |:-------------:|
-| atoCVaR  | It minimizes the $\text{CVaR}_{\alpha} $ following the $\alpha$ = **CVaR_alpha** selected in './etc/ato_Params', while providing a minimum expected net profit according to the **CVaR_expected_profit**.
-| atoCVaRProfit   | It maximizes the expected net profit while bounding the $\text{CVaR}_{\alpha} $ according to the **atoProfitCVaR_limit** value in './etc/ato_Params' with an $\alpha$ level of *atoProfitCVaR_alpha*.
+| atoCVaR  | It minimizes the $$\text{CVaR}_{\alpha}$$ following the $\alpha$ = **CVaR_alpha** selected in './etc/ato_Params', while providing a minimum expected net profit according to the **CVaR_expected_profit**.
+| atoCVaRProfit   | It maximizes the expected net profit while bounding the $$\text{CVaR}_{\alpha} $$ according to the **atoProfitCVaR_limit** value in './etc/ato_Params' with an $\alpha$ level of *atoProfitCVaR_alpha*.
 | atoEV  | It maximizes the expected net profit of the problem without a recourse function, thus operating in one single stage with averaged constraints.
 | atoPI  | In this version of the ATO problem, we assume we have Perfect Information (PI) of the demand, thus produce optimally. This allows the calculation of the EVPI (Expected Value of Perfect Information).
 | atoRP  | Standard Two-Stage stochastic LP model with recourse of the ATO problem, treated with the well-konwn Sampling Average Approximation (SAA).
