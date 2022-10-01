@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def multi_fosva(eps_p_fun, eps_m_fun, alpha_fun, len_x, grad, random_point_generator, n_iterations):
+def multi_fosva(alpha_fun, len_x, grad, random_point_generator, n_iterations):
     """Multidimensional FOSVA
     """
     # Initialize
@@ -34,7 +34,7 @@ def multi_fosva(eps_p_fun, eps_m_fun, alpha_fun, len_x, grad, random_point_gener
     return ans
 
 
-def fosva(eps_p_fun, eps_m_fun, alpha_fun, grad_p, grad_m, range_low, range_high, n_iterations):
+def fosva(alpha_fun, grad_p, grad_m, range_low, range_high, n_iterations):
     """One dimensional FOSVA
     """
     u = [0] # breakpoints

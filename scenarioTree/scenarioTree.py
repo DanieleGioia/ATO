@@ -18,7 +18,7 @@ class ScenarioTree(nx.DiGraph):
     This class implements a scenario tree.
     It extend the class nx.Digraph.
     '''
-    def __init__(self, name: str, branching_factors: list, dim_observations: int, initial_value: np.darray , stoch_model: Scenario_reducer):
+    def __init__(self, name: str, branching_factors: list, dim_observations: int, initial_value: np.ndarray , stoch_model: Scenario_reducer):
         """Initialize a graph.
 
         Args:

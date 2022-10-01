@@ -1,6 +1,6 @@
-# ATO
+# Assemble To Order Optimization
 
-This library simulates and optimizes **Two-Stage** and **Multi-Stage** policies for *assemble-to-order* problem. Specifically, this strategy allows the manufacture of the components under demand uncertainty, while assembling end items only after demand is realized.
+This library simulates and optimizes **Two-Stage** and **Multi-Stage** policies for *Assemble To Order (ATO)* problem. Specifically, this strategy allows the manufacture of the components under demand uncertainty, while assembling end items only after demand is realized.
 
 The code comprises several classes and two main(s) as examples. Those are supported by two different articles that we reccomend to cite in case you use the library.
 
@@ -101,7 +101,7 @@ Two-Stage
 
 ```
 
-### Instace generation
+## Instace generation
 
 Each instance of the ATO problem comprises:
 
@@ -132,7 +132,7 @@ All the Instance classes inherit a Gozinto matrix print function that associates
 
 The instance can also be read from a json file through the **InstanceRead** class.
 
-### Sampler & scenarios
+## Sampler & scenarios
 
 Once an instance of the problem is formulated, the main source of uncertainty, according to our assumption on the ATO problem, is the demand for each end item. Specifically, it is uncertain and possibly subject to seasonality.
 
@@ -149,9 +149,9 @@ We list the available sampler and their characteristics hereafter.
 When dealing with a fixed large number of scenarios, e.g., from a data-driven approach, it is possible to reduce them with the **scenarioReducer** classes. This class implements a scenario reducer that follows a Fast Forward (FF) technique with a 2-norm metric.\
 It is automatically implemented in the branching process of the scenario tree building for the **atoRPMultiStage** solver, where the branching factor leads the number of scenarios to optimize and retain.
 
-### Solver
+## Solver
 
-Several solvers are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\
+Several classes are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\
 Ato.py summarizes what a generic solver/problem should contain in its methods.\
 AtoG.py works as interface (super-class) of the assembly-to-order solvers in Gurobi. Here the population (Gurobi model construction) and the solution process (that can relies on different algorithms) are separated.
 
@@ -169,11 +169,27 @@ Here it follows a table summing up the principal characteristics of the availabl
 | atoRPMultiStage  | This model represents the demand uncertainty by means of a scenario tree with personalizable length and branching factors trough the **branching_factors** vector in './etc/ato_Params'. It supports seasonality throughout the scenario and can rely on multiple nodes per time-steps as well as average approximations. An extended discussion of the model is presented in our paper "**Rolling horizon policies for multi-stage stochastic assemble-to-order problems**".
 | atoRP_approx_comp  | This class contains two sub-classes. On the one hand, **AtoRP_approx_comp_v** serves to approximate the value of the initial inventory according to a first-order analysis on a Two-Stage setting. On the other hand, **AtoRP_approx_comp** applies the approximate value of the inventory following a linear piecewise value function defined by its breakpoints and slopes.
 
-### FOSVA
+## FOSVA
 
-***TODO***  
+The FOSVA package contains the functions needed to apply the *First Order Stock Value Approximation* (FOSVA). The available functions are divided in two sets: the ones related to the general approach and the ones related to the approach customized for the ATO problem. The function in the former set
+| Function           | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| piecewise_function | It is a function to define piecewise linear function more user friendly than [numpy.piecewise](https://numpy.org/doc/stable/reference/generated/numpy.piecewise.html). It is tought to become a lambda function after the specification of break points (argument *breaks*) and slopes (argument *slope*). |
+| fosva              | It runs the fosva algorithm for one dimensional problem. It can be used for problems with one inventory or to test the results on simple function. |
+| multi_fosva        | It runs the fosva algorithm for multi dimensional problem.   |
 
-### Agents & Envs
+Moreover, in this last set there are the functions: update_nu and _run_fosva_iteration which  arrange the dimension of the vector of slopes (*nu*) and run  one iteration of the fosva algorithm, respectively.
+Instead, the function in the latter set are
+
+| Function           | Description                                                  |
+| ------------------ | ------------------------------------------------------------ |
+| compute_gradient   | It computes the values of the TS to compute the left and right slope. |
+| run_multifosva_ato | It implements the FOSVA algorithm for the ATO problem. Basically it defines the way to compute the gradient and to generate random points that will be used by the general FOSVA algorithm. |
+
+Please, notice that by adapting these two functions it is possible to apply FOSVA to other problems.
+
+
+## Agents & Envs
 
 When dealing with a multistage environment, we consider a sequential approach based on the [Gym](https://www.gymlibrary.dev/) framework.
 

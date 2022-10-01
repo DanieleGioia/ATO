@@ -108,8 +108,6 @@ for sampler in samplers:
             prb,
             demand_known,
             step_derivative=step_derivative,
-            eps_p_fun=lambda i:100.0/(2**np.floor(i/20)) ,
-            eps_m_fun=lambda i: 100.0/(2**np.floor(i/20)) ,
             alpha_fun=lambda i: 10.0/(10.0 + i),
             n_iterations_fosva=n_it_fosva
         )

@@ -33,7 +33,7 @@ def compute_gradient(instance, inventory, prb, demand, eps):
     return posGrad, negGrad
 
 
-def run_multifosva_ato(instance, prb, demand, step_derivative, eps_p_fun, eps_m_fun, alpha_fun, n_iterations_fosva, save_pkl=None, save_json=None):
+def run_multifosva_ato(instance, prb, demand, step_derivative, alpha_fun, n_iterations_fosva, save_pkl=None, save_json=None):
     # create a function to compute the gradient
     grad = lambda inventory: compute_gradient(
         instance, inventory, prb, demand, step_derivative
@@ -46,8 +46,6 @@ def run_multifosva_ato(instance, prb, demand, step_derivative, eps_p_fun, eps_m_
             ) * mean_demand_component
     # run the multi_fosva function which computes FOSVA for multi dimensional functions
     ans = multi_fosva(
-        eps_p_fun=eps_p_fun,
-        eps_m_fun=eps_m_fun,
         alpha_fun=alpha_fun,
         grad=grad,
         random_point_generator=random_point_generator,
