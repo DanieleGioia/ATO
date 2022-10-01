@@ -24,11 +24,10 @@ class AtoG(Ato):
             model.setParam('MIPgap', gap)
         if time_limit:
             model.setParam(grb.GRB.Param.TimeLimit, time_limit)
-        #if verbose:
-        #    model.setParam('OutputFlag', 1)
+        if verbose:
+            model.setParam('OutputFlag', 1)
         else:
             model.setParam('OutputFlag', 0)
-        # model.write("./logs/model.lp")
         if verbose:
             print ('Solving a model with: '+str(model.NumConstrs)+' constraints')
             print ('    and: ' +str(model.NumVars)+ ' variables')
