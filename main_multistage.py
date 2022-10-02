@@ -24,7 +24,7 @@ from utils.utils import *
 np.set_printoptions(precision=4) 
 np.set_printoptions(suppress=True)
 
-#The following example retraces the models and the methods invistigated in 
+# The following example retraces the models and the methods invistigated in 
 # "Rolling horizon policies for multi-stage stochastic assemble-to-order problems",
 # by Daniele Giovanni Gioia and Edoardo Fadda and Paolo Brandimarte.
 
