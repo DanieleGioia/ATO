@@ -9,11 +9,15 @@ The code comprises several classes and two main(s) as examples. Those are suppor
 Multi-Stage
 
 ```Bibtex
-@misc{GioiaPrePrint,
-  title={Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
-  author={Daniele Giovanni Gioia and Edoardo Fadda and Paolo Brandimarte},
+@misc{https://doi.org/10.48550/arxiv.2210.00491,
+  doi = {10.48550/ARXIV.2210.00491},
+  url = {https://arxiv.org/abs/2210.00491},
+  author = {Gioia, Daniele Giovanni and Fadda, Edoardo and Brandimarte, Paolo},
+  keywords = {Optimization and Control (math.OC), FOS: Mathematics, FOS: Mathematics},
+  title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
+  publisher = {arXiv},
   year = {2022},
-  howpublished = {Available at SSRN: aggiungere link}
+  copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International}
 }
 ```
 
