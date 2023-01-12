@@ -24,9 +24,10 @@ class Fast_forward_W2(Scenario_reducer):
         probs_initial = self.initProbs.copy() 
         #### computation of the distance matrix
         dist_mtrx = np.zeros((self.N,self.N))
-        for i in range(self.N):
-            for j in range(self.N):
+        for i in range(self.N): #sym matrix
+            for j in range(i+1):
                 dist_mtrx[i,j] = np.linalg.norm( self.initialSet[:,i] - self.initialSet[:,j] )
+                dist_mtrx[j,i] = dist_mtrx[i,j]
         #### 
         J_set = np.arange(self.N)
         ##Step 1

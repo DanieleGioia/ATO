@@ -88,9 +88,11 @@ class SimplePlant(gym.Env):
         reward = self.total_cost['profit']
 
         #Step
-        self._next_observation()
         self.current_step += 1
         done = self.current_step == self.horizon
+        if not done:
+            self._next_observation()
+    
         info = {
             "profit": self.total_cost['profit'],
             "holding_costs": self.total_cost['holding_costs'],
@@ -106,4 +108,22 @@ class SimplePlant(gym.Env):
         #observation 
         obs = {'demand':self.demand,'inventory': self.instance.inventory, 'seasonalFactor': self.current_step % self.seas }
 
+        # self.render() #if uncommented is useful to debug session. it plots for every steps all the passages.
+
         return obs, reward, done, info
+
+
+    def render(self):
+        # Render the environment to the screen
+        print(f'Time: {self.current_step}')
+        print(f'\t demand: {self.scenario_demand[:, self.current_step-1]}')
+        print(f'\t item sold: { [f"{ele:.0f}" for ele in self.production] }')
+        print(f'\t missed_demand: { self.missed_demand }')
+
+        print(f'\t components produced: { [f"{ele:.0f}" for ele in self.action] }')
+        print(f'\t inventory: {self.instance.inventory}')
+
+        print(f"\t cost: ")
+        print(f"\t \t profit: {self.total_cost['profit']:.2f}")
+        print(f"\t \t holding_costs: {self.total_cost['holding_costs']:.2f}")
+        print(f"\t \t production: { self.action.dot(self.instance.costs):.2f}")
