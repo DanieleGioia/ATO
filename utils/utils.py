@@ -3,7 +3,6 @@ import numpy as np
 #
 import matplotlib.pyplot as plt
 from matplotlib import rc
-from matplotlib.lines import Line2D
 import seaborn as sns
 import pandas as pd
 #
@@ -73,8 +72,9 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
     rc('ytick',labelsize=15)
     #rc("font", size="12")
 
-    values = range(horizon)
-    colors = plt.cm.jet(np.linspace(0,1,len(results.keys())))# Initialize holder for trajectories
+    values = np.arange(0,horizon,2)
+    colors = plt.cm.Dark2.colors
+    lines = ["-","--","-.",":"]
     ########Cumulative profits
     ax = plt.subplot()
     for j,k in enumerate(dfCumProfit.keys()):
@@ -82,11 +82,12 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
                 data = dfCumProfit[k],
                 x = 'column',
                 y = 'value',
-                sort = False, color = colors[j], label=k)
+                linestyle = lines[j%4],
+                sort = False, color = colors[j%6], label=k)
     plt.ticklabel_format(style='sci', axis='y',scilimits = [-4,4])
     plt.ylabel('Cumulative profits',fontsize=18,weight='bold')
-    plt.xlabel('Time step',fontsize=18,weight='bold')
-    plt.xticks(values,np.linspace(1,horizon,horizon).astype(int))
+    plt.xlabel('Month',fontsize=18,weight='bold')
+    plt.xticks(values,np.arange(0,horizon,2)%12 + 1)
     plt.tight_layout()
     if fig_path:
         plt.savefig(os.path.join(fig_path, 'cumulativeProfits.pdf'))
@@ -101,11 +102,12 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
                 data = dfProduction[k],
                 x = 'column',
                 y = 'value',
-                sort = False, color = colors[j], label=k)
+                linestyle = lines[j%4],
+                sort = False, color = colors[j%6], label=k)
     plt.ticklabel_format(style='sci', axis='y',scilimits = [-4,4])
     plt.ylabel('Production costs',fontsize=18,weight='bold')
-    plt.xlabel('Time step',fontsize=18,weight='bold')
-    plt.xticks(values,np.linspace(1,horizon,horizon).astype(int))
+    plt.xlabel('Month',fontsize=18,weight='bold')
+    plt.xticks(values,np.arange(0,horizon,2)%12 + 1)
     plt.tight_layout()
     if fig_path:
         plt.savefig(os.path.join(fig_path, 'productionCost.pdf'))
@@ -120,11 +122,12 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
                 data = dfLostSales[k],
                 x = 'column',
                 y = 'value',
-                sort = False, color = colors[j], label=k)
+                linestyle = lines[j%4],
+                sort = False, color = colors[j%6], label=k)
     plt.ticklabel_format(style='sci', axis='y',scilimits = [-4,4])
     plt.ylabel('Lost Sales',fontsize=18,weight='bold')
-    plt.xlabel('Time step',fontsize=18,weight='bold')
-    plt.xticks(values,np.linspace(1,horizon,horizon).astype(int))
+    plt.xlabel('Month',fontsize=18,weight='bold')
+    plt.xticks(values,np.arange(0,horizon,2)%12 + 1)
     plt.tight_layout()
     if fig_path:
         plt.savefig(os.path.join(fig_path, 'lostSales.pdf'))
@@ -139,11 +142,12 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
                 data = dfAvgInventory[k],
                 x = 'column',
                 y = 'value',
-                sort = False, color = colors[j], label=k)
+                linestyle = lines[j%4],
+                sort = False, color = colors[j%6], label=k)
     plt.ticklabel_format(style='sci', axis='y',scilimits = [-4,4])
     plt.ylabel('Inventory levels',fontsize=18,weight='bold')
-    plt.xlabel('Time step',fontsize=18,weight='bold')
-    plt.xticks(np.linspace(0,horizon,horizon+1).astype(int))
+    plt.xlabel('Month',fontsize=18,weight='bold')
+    plt.xticks(np.concatenate([np.array([0]),np.arange(2,horizon+1,2)]),np.concatenate([np.array([0]),np.arange(0,horizon,2)%12 + 1]))
     plt.tight_layout()
     if fig_path:
         plt.savefig(os.path.join(fig_path, 'inventoryLevels.pdf'))
@@ -157,7 +161,7 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
         profitsHist[k] = list(chain(*results[k]['profits']))
     ax = plt.subplot()
     for j,k in enumerate(profitsHist.keys()):
-        ax.hist(profitsHist[k],label=k,color=colors[j],histtype = 'step')
+        ax.hist(profitsHist[k],label=k,color=colors[j%6],histtype = 'step')
     plt.ylabel('Frequency',fontsize=18,weight='bold')
     plt.xlabel('Profits',fontsize=18,weight='bold')
     plt.legend()
@@ -174,7 +178,7 @@ def printMultiHorizon(results, horizon, listToPlot = [] , fig_path=None):
         timesHist[k] = list(chain(*results[k]['time']))
     ax = plt.subplot()
     for j,k in enumerate(timesHist.keys()):
-        ax.hist(timesHist[k],label=k,color=colors[j],histtype = 'step')
+        ax.hist(timesHist[k],label=k,color=colors[j%6],histtype = 'step')
     plt.ylabel('Frequency',fontsize=16)
     plt.xlabel('Time (s) per timestep',fontsize=16)
     plt.legend()

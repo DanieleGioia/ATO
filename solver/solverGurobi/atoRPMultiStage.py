@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import gurobipy as grb
-from solver.solverGurobi.atoG import AtoG
+from solver.solverGurobi.atoG_multi import AtoG_multi
 from scenarioTree import ScenarioTree
 from scenarioReducer import *
 
@@ -23,9 +23,9 @@ class DummyScenarioReducer(Scenario_reducer):
         return demand_reduced, probs_reduced 
 
 
-class AtoRPMultiStage(AtoG):
+class AtoRPMultiStage(AtoG_multi):
     """
-    Standard version of the ATO problem, see the companion paper/thesis for the explicit model
+    Standard version of the ATO problem, see the companion paper for the explicit model
     """
     def __init__(self, **setting):
         super().__init__(**setting)
@@ -42,14 +42,14 @@ class AtoRPMultiStage(AtoG):
         # the clock is necessary to use the right data in case of multiple stages with seasonality
         self.current += 1
 
-    def populate(self, instance, scenarios):
+    def populate(self, instance, scenarios, present_demand):
         items = range(instance.n_items)
         machines = range(instance.n_machines)
 
         FFreducers = []
         for i in range(len(self.branching_factors)): #the length of the horizon is given by the branching factors specification
             #selection of the data w.r.t. the seasonality. (We assume that we cannot use data from months with peaks of demand to decide on months with low demand)
-            selected_data = scenarios[:,np.arange( (self.current + i) % self.seas ,len( scenarios[0,:]), self.seas)]
+            selected_data = scenarios[:,np.arange( (self.current + i +1) % self.seas ,len( scenarios[0,:]), self.seas)]
             #Reduction of the number of nodes according to a W2 fast forward scenario reducer 
             if self.branching_factors[i] > 1:
                 FFreducers.append(
@@ -68,7 +68,7 @@ class AtoRPMultiStage(AtoG):
             name='tree1',
             branching_factors=self.branching_factors,
             dim_observations=instance.n_items,
-            initial_value=np.array([1]*instance.n_items),
+            initial_value=present_demand,
             stoch_model=FFreducers
         )
 
@@ -137,8 +137,8 @@ class AtoRPMultiStage(AtoG):
         # Y bounds
         model.addConstrs(Y[j, n] + L[j, n] == scenario_tree.nodes[n]['obs'][j] for j in items for n in nodes)
 
-        # Initial sondition
-        model.addConstr(I[:, 0] == I_0[:], name="initial_condition")
+        # Initial condition
+        model.addConstr(I[:, 0] == I_0[:] - instance.gozinto.T @ Y[:, 0], name="initial_condition")
 
         #root node definition
         model.addConstr(X == X_ms[:, 0], name="X_def")
@@ -149,4 +149,6 @@ class AtoRPMultiStage(AtoG):
             model.addConstr(I[:, n] + instance.gozinto.T @ Y[:, n] == X_ms[:, parent] + I[:, parent], name="evolution")
         
         model.update()
+        self.X = X
+        self.Y = Y[:,0]
         return model

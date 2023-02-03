@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import gym
 import numpy as np
-from utils.Tester import Tester
 
 # This class implements the notation of the gym library.
 # we refer to https://www.gymlibrary.dev/ for further details.
@@ -14,7 +13,6 @@ class SimplePlant(gym.Env):
 
         # Initial State:
         self.instance = instance
-        self.tester = Tester()
         # Demand
         self.scenario_demand = completeDemand
         #horizon
@@ -30,18 +28,17 @@ class SimplePlant(gym.Env):
     def _next_observation(self):
         self.demand = self.scenario_demand[:, self.current_step]
 
-    def _take_action(self, action, inventory_level, demand):
+    def _take_action(self, action, inventory_level, demand, sold):
         #simulation of the production step when the decision has been made.
-        profit, item_produced = self.tester.produce(self.instance, action, demand)
-
-        self.production = item_produced
+        self.production = np.array(sold)
+        profit = self.instance.profits @ sold - self.instance.costs @ action 
         
-        component_used = (item_produced.T).dot(self.instance.gozinto)
+        component_used = (self.production.T).dot(self.instance.gozinto)
         # NB: element wise modification keeps reference
         for i in range(self.instance.n_components):
             inventory_level[i] = inventory_level[i] + action[i] - component_used[i]
 
-        self.missed_demand = np.maximum(demand - item_produced, 0)
+        self.missed_demand = np.maximum(demand - self.production, 0)
         #profit adjustment
         holdingCosts = np.sum(self.instance.holding_costs*inventory_level)
         lost_sales = np.sum(self.missed_demand*self.instance.lost_sales)
@@ -80,9 +77,9 @@ class SimplePlant(gym.Env):
         
         return {'demand':self.demand,'inventory': self.instance.inventory,'seasonalFactor': 0}
 
-    def step(self, action):
+    def step(self, action, sold ):
         self.total_cost = self._take_action(
-            action, self.instance.inventory, self.demand
+            action, self.instance.inventory, self.demand, sold
         )
         self.action = np.array(action)
         reward = self.total_cost['profit']
@@ -106,7 +103,7 @@ class SimplePlant(gym.Env):
         }
 
         #observation 
-        obs = {'demand':self.demand,'inventory': self.instance.inventory, 'seasonalFactor': self.current_step % self.seas }
+        obs = {'demand':self.demand,'inventory': self.instance.inventory, 'seasonalFactor': (self.current_step+1) % self.seas }
 
         # self.render() #if uncommented is useful to debug session. it plots for every steps all the passages.
 

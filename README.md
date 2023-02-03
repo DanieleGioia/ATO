@@ -1,6 +1,6 @@
 # Assemble To Order Optimization
 
-This library simulates and optimizes **Two-Stage** and **Multi-Stage** policies for *Assemble To Order (ATO)* problem. Specifically, this strategy allows the manufacture of the components under demand uncertainty, while assembling end items only after demand is realized.
+This library simulates and optimizes **Two-Stage** and **Multi-Stage** policies for *Assemble To Order (ATO)* problems. Specifically, this strategy allows the manufacture of components under demand uncertainty, while assembling end items only after demand is realized.
 
 The code comprises several classes and two main(s) as examples. Those are supported by two different articles that we reccomend to cite in case you use the library.
 
@@ -20,6 +20,8 @@ Multi-Stage
   copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International}
 }
 ```
+
+#### **PLEASE NOTE THAT IN THIS VERSION OF THE CODE ALL PROBLEMS ARE CONTINUOUS. THE MULTI-STAGE ARTICLE CONSIDERS INTEGER VERSIONS WITH LONGER COMPUTATION TIMES.**
 
 Two-Stage
 
@@ -47,9 +49,11 @@ Two-Stage
 | | |____atoCVaRProfit.py
 | | |______init__.py
 | | |____atoG.py
+| | |____atoG_multi.py
 | | |____atoCVaR.py
 | | |____atoPI.py
 | | |____atoRP.py
+| | |____atoRP_multi.py
 
 |____sampler
 | |____Hierarchical_Sampl.py
@@ -72,17 +76,13 @@ Two-Stage
 |____agents
 | |____twoStageAgent.py
 | |______init__.py
-| |______pycache__
 | |____atoAgent.py
 | |____multiStageAgent.py
+| |____perfectInfoAgent.py
 
 |____utils
 | |____Tester.py
 | |____utils.py
-
-|____requirements
-|____main_multistage.py
-|____README.md
 
 |____FOSVA
 | |____fosva_ato.py
@@ -96,12 +96,16 @@ Two-Stage
 
 |____scenarioTree
 | |______init__.py
-| |______pycache__
 | |____scenarioTree.py
 
 |____envs
 | |____simplePlant.py
 | |______init__.py
+
+|____requirements
+|____main_multistage.py
+|____main_risk_measures.py
+|____README.md
 
 ```
 
@@ -113,9 +117,9 @@ Each instance of the ATO problem comprises:
 - A set of technological and commercial parameters (costs and prices of components and end items).
 - The Gozinto factors (amount of components required for assembling the end item).
 
-In case of a random generation of an instance (by means of the **InstanceRandom** class), all these characteristics of the problems are tuned by the **instance_Params** json file in the etc folder.
+In case of a random generation of an instance (by means of the **InstanceRandom** class), all these characteristics of the problems are tuned by the **instance_Params** json file in the _etc_ folder.
 
-Here it follows the role of the available parameters:
+Here it follows the role of each available parameters:
 
 - "seed" $\rightarrow$ Initialization of the pseudorandom number generator.
 - "n_items" $\rightarrow$ Number of end items.
@@ -157,9 +161,9 @@ It is automatically implemented in the branching process of the scenario tree bu
 
 Several classes are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\
 Ato.py summarizes what a generic solver/problem should contain in its methods.\
-AtoG.py works as interface (super-class) of the assembly-to-order solvers in Gurobi. Here the population (Gurobi model construction) and the solution process (that can relies on different algorithms) are separated.
+AtoG.py works as interface (super-class) of the assembly-to-order solvers in Gurobi. Here the population (Gurobi model construction) and the solution process (that can relies on different algorithms) are separated. AtoG_multi.py works as interface for multi-stage problems where a rolling-horizon logic requires a different methodology of access to the variables.
 
-Here it follows a table summing up the principal characteristics of the available solvers. All of them but atoEV and atoRPMultiStage are Two-stage environments, the latter works with several kind of scenario trees. The classes inherits from AtoG.py and defines how to populate the model thanks to polymorphism.
+Here it follows a table summing up the principal characteristics of the available solvers. All of them but atoEV and atoRPMultiStage are Two-stage environments, the latter works with several kind of scenario trees. The classes inherits from either AtoG.py or AtoG_multi.py, defyning how to populate the model thanks to polymorphism.
 
 🔴  **For a detailed formulation of the available models please refer to the cited papers.** 🔴
 
@@ -168,10 +172,11 @@ Here it follows a table summing up the principal characteristics of the availabl
 | atoCVaR  | It minimizes the $$\text{CVaR}_{\alpha}$$ following the $\alpha$ = **CVaR_alpha** selected in './etc/ato_Params', while providing a minimum expected net profit according to the **CVaR_expected_profit**.
 | atoCVaRProfit   | It maximizes the expected net profit while bounding the $$\text{CVaR}_{\alpha} $$ according to the **atoProfitCVaR_limit** value in './etc/ato_Params' with an $\alpha$ level of *atoProfitCVaR_alpha*.
 | atoEV  | It maximizes the expected net profit of the problem without a recourse function, thus operating in one single stage with averaged constraints.
-| atoPI  | In this version of the ATO problem, we assume we have Perfect Information (PI) of the demand, thus produce optimally. This allows the calculation of the EVPI (Expected Value of Perfect Information).
+| atoPI  | In this version of the ATO problem, we assume we have Perfect Information (PI) of the demand in a **multi-stage** setting, thus produce optimally. This allows the calculation of the EVPI (Expected Value of Perfect Information).
 | atoRP  | Standard Two-Stage stochastic LP model with recourse of the ATO problem, treated with the well-konwn Sampling Average Approximation (SAA).
+| atoRP_multi  | Standard Two-Stage stochastic LP model with recourse of the ATO problem from a rolling-horizon point of view, with holding costs and lost sales, treated with the well-konwn Sampling Average Approximation (SAA).
 | atoRPMultiStage  | This model represents the demand uncertainty by means of a scenario tree with personalizable length and branching factors trough the **branching_factors** vector in './etc/ato_Params'. It supports seasonality throughout the scenario and can rely on multiple nodes per time-steps as well as average approximations. An extended discussion of the model is presented in our paper "**Rolling horizon policies for multi-stage stochastic assemble-to-order problems**".
-| atoRP_approx_comp  | This class contains two sub-classes. On the one hand, **AtoRP_approx_comp_v** serves to approximate the value of the initial inventory according to a first-order analysis on a Two-Stage setting. On the other hand, **AtoRP_approx_comp** applies the approximate value of the inventory following a linear piecewise value function defined by its breakpoints and slopes.
+| atoRP_approx_comp  | This class contains two sub-classes made for generating and applying two-stage models with a end-of-horizon value function on multi-stage settings. On the one hand, **AtoRP_approx_comp_v** serves to approximate the value of the initial inventory according to a first-order analysis on a Two-Stage setting. On the other hand, **AtoRP_approx_comp** applies the approximate value of the inventory following a linear piecewise value function defined by its breakpoints and slopes.
 
 ## FOSVA
 
@@ -199,3 +204,4 @@ When dealing with a multistage environment, we consider a sequential approach ba
 
 An **atoAgent** is responsible for the communication between the dynamics of the problem and the sequential optimization. Specifically, both **twoStageAgent** and **multiStageAgent** decide an action (a production schedule) for each specific time step, following the information about the current state of the system provided by a class of the *envs* family (e.g., **simplePlant**). We refer to the [Gym](https://www.gymlibrary.dev/) documentation for a deeper analysis of the observation/action/step sequentiality.\
 Focusing on the agents, intuitively, the **twoStageAgent** is made to deal with the Two-Stage solvers, while **multiStageAgent** allows only for the AtoRPMultiStage class, making an explicit model for the seasonality possible.
+The **perfectInfoAgent** decides all actions in a horizon at the first instant of time, taking into account the already known demand.

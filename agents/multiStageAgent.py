@@ -20,12 +20,13 @@ class MultiStageAgent(AtoAgent):
 
     def get_action(self, obs):
         # The decision is made by solving the ATO problem.
-        _, sol, _ = self.prb.solve(
+        _, solX, solY , _ = self.prb.solve(
             self.env.instance,
-            self.demand)
+            self.demand,
+            obs['demand'])
         #The multistage solver has an internal clock that must be updated. In this way
         # it is possible to take into account the seasonality within the estimaion of the future demand for 
         # a horizon longer than two stages.
         self.prb.updateClock() #notice that it is update AFTER the decision.
         self.__updateDemand(obs['demand'])
-        return sol
+        return solX, solY

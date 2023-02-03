@@ -9,7 +9,7 @@ def compute_gradient(instance, inventory, prb, demand, eps):
     """
     instance.inventory = inventory
     # nominal value
-    ofNom, _ , _ = prb.solve(instance, demand)
+    ofNom, _ , _, _ = prb.solve(instance, demand, [])
     # inizialization
     posGrad = np.zeros(instance.n_components)
     negGrad = np.zeros(instance.n_components)
@@ -18,13 +18,13 @@ def compute_gradient(instance, inventory, prb, demand, eps):
         # inventory modification
         instance.inventory[i] += eps
         # computation
-        ofTmp, _ , _ = prb.solve(instance, demand)
+        ofTmp, _ , _, _ = prb.solve(instance, demand, [])
         # saving the result
         posGrad[i] = (ofTmp - ofNom)/eps
         # inventory modification
         instance.inventory[i] -= 2*eps # one eps to nominal, one eps for left grad
         # computation
-        ofTmp, _ , _ = prb.solve(instance, demand)
+        ofTmp, _ , _, _ = prb.solve(instance, demand, [])
         # saving the result
         negGrad[i] = (ofNom - ofTmp)/eps # notice the sign
         # back to nominal

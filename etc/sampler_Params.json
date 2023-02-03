@@ -8,7 +8,7 @@
     "sigma2": 15,
     "cannibalization":1,
     "additiveSeas":[0],
-    "multiplicativeSeas":[0.8,0.7,0.9,1.1,1.5,1.3,1.2,1,0.9,0.8,0.7,1.1],
+    "multiplicativeSeas":[1.0,1.1,0.9,0.8,1,0.8,1.2,1.3,1.2,1.0,0.8,0.9],
     "low":0,
     "high":1300
 }

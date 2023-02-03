@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-
+from tqdm import tqdm
 
 def multi_fosva(alpha_fun, len_x, grad, random_point_generator, n_iterations):
     """Multidimensional FOSVA
@@ -11,7 +11,8 @@ def multi_fosva(alpha_fun, len_x, grad, random_point_generator, n_iterations):
         ans.append({'u': [0], 'v': [0]})
     alpha = alpha_fun(0)
     # for each iteration
-    for it in range(n_iterations):
+    print('Fosva computation')
+    for it in tqdm(range(n_iterations)):
         # take a random point
         vec_s = random_point_generator()
         # evaluate the right and left slope in that point

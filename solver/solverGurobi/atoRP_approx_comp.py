@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-from solver.solverGurobi.atoG import AtoG
+from solver.solverGurobi.atoG_multi import AtoG_multi
 import gurobipy as grb
 import numpy as np
 
 
-class AtoRP_approx_comp(AtoG):
+class AtoRP_approx_comp(AtoG_multi):
     """
     ATO problem with recourse
     SAA methodology
@@ -26,7 +26,7 @@ class AtoRP_approx_comp(AtoG):
         self.name = "AtoRP_approx_comp"
         self.fosva_res = self.setting['fosva_res']
         
-    def populate(self, instance, scenarios):
+    def populate(self, instance, scenarios, present_demand):
         n_scenarios = scenarios.shape[1]
         pi_s = 1.0 / (n_scenarios + 0.0)
         ###
@@ -48,17 +48,33 @@ class AtoRP_approx_comp(AtoG):
             vtype=grb.GRB.CONTINUOUS,
             name='X'
         )
+        #inventory
+        I = model.addMVar(
+            shape=instance.n_components,
+            vtype=grb.GRB.CONTINUOUS,
+            name='I'
+        )
         #production variable
         Y = model.addMVar(
             shape=(instance.n_items, n_scenarios),
             vtype=grb.GRB.CONTINUOUS,
             name='Y'
         )
+        Y_0 = model.addMVar(
+            shape=instance.n_items,
+            vtype=grb.GRB.CONTINUOUS,
+            name='Y_0'
+        )
         #lost sale variable
         L = model.addMVar(
             shape=(instance.n_items, n_scenarios),
             vtype=grb.GRB.CONTINUOUS,
             name='L'
+        )
+        L_0 = model.addMVar(
+            shape=instance.n_items,
+            vtype=grb.GRB.CONTINUOUS,
+            name='L_0'
         )
         #Z are the components not sold
         Z = model.addMVar(
@@ -101,6 +117,8 @@ class AtoRP_approx_comp(AtoG):
 
         # first stage costs
         expr -= instance.costs[:] @ X
+        expr -= instance.lost_sales[:] @ L_0
+        expr += instance.profits[:] @ Y_0
 
         #Approximated value function
         for i in components:
@@ -113,11 +131,12 @@ class AtoRP_approx_comp(AtoG):
 
         # Demand constr. and lost sales penalty
         model.addConstrs((Y[j, :] + L[j, :] == scenarios[j, :] for j in items), name="demand_constr")
+        model.addConstr((Y_0 + L_0 == present_demand), name="init_demand_constr")
         # Capacity constraint for each machine
         model.addConstrs((instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines),name="processing_time")
         # End items building
-        model.addConstrs((instance.gozinto.T @ Y[:, s] + Z[: ,s] == X + I_0 for s in range(n_scenarios)) , name="end_item_building")        
-
+        model.addConstrs((instance.gozinto.T @ Y[:, s] + Z[: ,s] == X + I for s in range(n_scenarios)) , name="end_item_building")        
+        model.addConstr((instance.gozinto.T @ Y_0 + I ==  I_0 ) , name="init_inv")    
         # Breakpoints ordering
         for i in components:
             for s in range(n_scenarios):
@@ -129,11 +148,14 @@ class AtoRP_approx_comp(AtoG):
         
         #updateModel
         model.update()
+        model.update()
+        self.Y = Y_0
+        self.X = X
         return model
 
 
 
-class AtoRP_approx_comp_v(AtoG):
+class AtoRP_approx_comp_v(AtoG_multi):
     """
     ATO problem with recourse
     SAA methodology
@@ -143,7 +165,7 @@ class AtoRP_approx_comp_v(AtoG):
         super().__init__(**setting)
         self.name = "AtoRP_approx_comp_v"
         
-    def populate(self, instance, scenarios):
+    def populate(self, instance, scenarios, present_demand = []):
         n_scenarios = scenarios.shape[1]
         pi_s = 1.0 / (n_scenarios + 0.0)
         ###
@@ -205,4 +227,6 @@ class AtoRP_approx_comp_v(AtoG):
         model.addConstrs(instance.processing_time[:, m] @ X <= instance.availability[m] for m in machines) # Capacity constraint for each machine
         model.addConstrs(instance.gozinto.T @ Y[:, s] + Z[:, s] == X + I_0 for s in range(n_scenarios))  #components and end items connection
         model.update()
+        self.Y = Y
+        self.X = X
         return model
