@@ -16,7 +16,7 @@ Multi-Stage
   keywords = {Optimization and Control (math.OC), FOS: Mathematics, FOS: Mathematics},
   title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
   publisher = {arXiv},
-  year = {2022},
+  year = {2023},
   copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International}
 }
 ```
