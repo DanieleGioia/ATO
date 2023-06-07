@@ -26,12 +26,14 @@ Multi-Stage
 Two-Stage
 
 ```Bibtex
-@incollection{Fadda2022,
-  year = {2022},
-  publisher = {Springer International Publishing},
+@incollection{fadda2023robust,
+  year = {2023},
+  publisher = {Springer Cham},
+  editor = {Cappanera, Paola and Lapucci, Matteo and Schoen, Fabio and Sciandrone, Marco and Tardella, Fabio and Visintin, Filippo},
   author = {Edoardo Fadda and Daniele Giovanni Gioia and Paolo Brandimarte},
-  title = {Robust Approaches for a Two-Stage Assembly-to-Order Problem},
-  booktitle = {{AIRO} Springer Series},
+  title = {Risk-averse Approaches for a Two-Stage Assembly-to-Order Problem.},
+  booktitle = {Optimization and Decision Science: Operations Research, Inclusion and Equity},
+  isbn = {978-3-031-28863-0},
   note = {forthcoming}
 }
 ```
