@@ -2,7 +2,7 @@
 
 This library simulates and optimizes **Two-Stage** and **Multi-Stage** policies for *Assemble To Order (ATO)* problems. Specifically, this strategy allows the manufacture of components under demand uncertainty, while assembling end items only after demand is realized.
 
-The code comprises several classes and two main(s) as examples. Those are supported by two different articles that we reccomend to cite in case you use the library.
+The code comprises several classes and two main(s) as examples. Those are supported by two different articles that we recommend to cite in case you use the library.
 
 ## Citing Us
 
@@ -34,7 +34,7 @@ Two-Stage
   title = {Risk-averse Approaches for a Two-Stage Assembly-to-Order Problem.},
   booktitle = {Optimization and Decision Science: Operations Research, Inclusion and Equity},
   isbn = {978-3-031-28863-0},
-  note = {forthcoming}
+  doi = {https://doi.org/10.1007/978-3-031-28863-0_13}
 }
 ```
 
@@ -111,7 +111,7 @@ Two-Stage
 
 ```
 
-## Instace generation
+## Instance generation
 
 Each instance of the ATO problem comprises:
 
@@ -121,7 +121,7 @@ Each instance of the ATO problem comprises:
 
 In case of a random generation of an instance (by means of the **InstanceRandom** class), all these characteristics of the problems are tuned by the **instance_Params** json file in the _etc_ folder.
 
-Here it follows the role of each available parameters:
+Here it follows the role of each available parameter:
 
 - "seed" $\rightarrow$ Initialization of the pseudorandom number generator.
 - "n_items" $\rightarrow$ Number of end items.
@@ -153,7 +153,7 @@ We list the available sampler and their characteristics hereafter.
 | ------------- |:-------------:|
 |GaussianSampler |  The Gaussian sampler generates the demand according to **independent** and identically distributed Gaussian random variables with mean ("mu") and standard deviation ("sigma") specificated in "./etc/sampler_Params".
 |BiGaussianSampler| The Gaussian sampler is available also in a bi-modal variant, where the additional mean ("mu2"), standard deviation ("sigma2") and mixing factor ("p1") have to be specified.
-|HierarchicalSampler| This sampler consider a process composed by two nested steps, such that a family-correlation is generated. Firstly, we independently sample the aggregated demand for the entire family, then the overall demand per family is split among the items belonging to the family according to weights randomly sampled from a Dirichlet distribution.
+|HierarchicalSampler| This sampler considers a process composed of two nested steps, such that a family correlation is generated. Firstly, we independently sample the aggregated demand for the entire family, then the overall demand per family is split among the items belonging to the family according to weights randomly sampled from a Dirichlet distribution.
 |MultiStageSampler| It adapts the other samplers to a multistage setting. It generates as scenarios a fixed horizon number of sampled demand per end item. It is possible to set seasonality in a multiplicative ("multiplicativeSeas") or additive ("additiveSeas") way w.r.t. the mean and standard deviation of the employed distribution.
 
 When dealing with a fixed large number of scenarios, e.g., from a data-driven approach, it is possible to reduce them with the **scenarioReducer** classes. This class implements a scenario reducer that follows a Fast Forward (FF) technique with a 2-norm metric.\
@@ -163,9 +163,9 @@ It is automatically implemented in the branching process of the scenario tree bu
 
 Several classes are available. They solve different problems in terms of both objective functions and constraints. However, all of them currently rely on [**Gurobi**](https://www.gurobi.com/). Extensions with other software are possible.\
 Ato.py summarizes what a generic solver/problem should contain in its methods.\
-AtoG.py works as interface (super-class) of the assembly-to-order solvers in Gurobi. Here the population (Gurobi model construction) and the solution process (that can relies on different algorithms) are separated. AtoG_multi.py works as interface for multi-stage problems where a rolling-horizon logic requires a different methodology of access to the variables.
+AtoG.py works as an interface (super-class) of the assembly-to-order solvers in Gurobi. Here the population (Gurobi model construction) and the solution process (that can rely on different algorithms) are separated. AtoG_multi.py works as an interface for multi-stage problems where a rolling-horizon logic requires a different methodology of access to the variables.
 
-Here it follows a table summing up the principal characteristics of the available solvers. All of them but atoEV and atoRPMultiStage are Two-stage environments, the latter works with several kind of scenario trees. The classes inherits from either AtoG.py or AtoG_multi.py, defyning how to populate the model thanks to polymorphism.
+Here it follows a table summing up the principal characteristics of the available solvers. All of them but atoEV and atoRPMultiStage are Two-stage environments, the latter works with several kinds of scenario trees. The classes inherit from either AtoG.py or AtoG_multi.py, defining how to populate the model thanks to polymorphism.
 
 🔴  **For a detailed formulation of the available models please refer to the cited papers.** 🔴
 
@@ -174,28 +174,28 @@ Here it follows a table summing up the principal characteristics of the availabl
 | atoCVaR  | It minimizes the $$\text{CVaR}_{\alpha}$$ following the $\alpha$ = **CVaR_alpha** selected in './etc/ato_Params', while providing a minimum expected net profit according to the **CVaR_expected_profit**.
 | atoCVaRProfit   | It maximizes the expected net profit while bounding the $$\text{CVaR}_{\alpha} $$ according to the **atoProfitCVaR_limit** value in './etc/ato_Params' with an $\alpha$ level of *atoProfitCVaR_alpha*.
 | atoEV  | It maximizes the expected net profit of the problem without a recourse function, thus operating in one single stage with averaged constraints.
-| atoPI  | In this version of the ATO problem, we assume we have Perfect Information (PI) of the demand in a **multi-stage** setting, thus produce optimally. This allows the calculation of the EVPI (Expected Value of Perfect Information).
+| atoPI  | In this version of the ATO problem, we assume we have Perfect Information (PI) of the demand in a **multi-stage** setting, thus producing optimally. This allows the calculation of the EVPI (Expected Value of Perfect Information).
 | atoRP  | Standard Two-Stage stochastic LP model with recourse of the ATO problem, treated with the well-konwn Sampling Average Approximation (SAA).
-| atoRP_multi  | Standard Two-Stage stochastic LP model with recourse of the ATO problem from a rolling-horizon point of view, with holding costs and lost sales, treated with the well-konwn Sampling Average Approximation (SAA).
-| atoRPMultiStage  | This model represents the demand uncertainty by means of a scenario tree with personalizable length and branching factors trough the **branching_factors** vector in './etc/ato_Params'. It supports seasonality throughout the scenario and can rely on multiple nodes per time-steps as well as average approximations. An extended discussion of the model is presented in our paper "**Rolling horizon policies for multi-stage stochastic assemble-to-order problems**".
-| atoRP_approx_comp  | This class contains two sub-classes made for generating and applying two-stage models with a end-of-horizon value function on multi-stage settings. On the one hand, **AtoRP_approx_comp_v** serves to approximate the value of the initial inventory according to a first-order analysis on a Two-Stage setting. On the other hand, **AtoRP_approx_comp** applies the approximate value of the inventory following a linear piecewise value function defined by its breakpoints and slopes.
+| atoRP_multi  | Standard Two-Stage stochastic LP model with recourse of the ATO problem from a rolling-horizon point of view, with holding costs and lost sales, treated with the well-known Sampling Average Approximation (SAA).
+| atoRPMultiStage  | This model represents the demand uncertainty by means of a scenario tree with personalizable length and branching factors through the **branching_factors** vector in './etc/ato_Params'. It supports seasonality throughout the scenario and can rely on multiple nodes per time-steps as well as average approximations. An extended discussion of the model is presented in our paper "**Rolling horizon policies for multi-stage stochastic assemble-to-order problems**".
+| atoRP_approx_comp  | This class contains two sub-classes made for generating and applying two-stage models with an end-of-horizon value function on multi-stage settings. On the one hand, **AtoRP_approx_comp_v** serves to approximate the value of the initial inventory according to a first-order analysis in a Two-Stage setting. On the other hand, **AtoRP_approx_comp** applies the approximate value of the inventory following a linear piecewise value function defined by its breakpoints and slopes.
 
 ## FOSVA
 
 The FOSVA package contains the functions needed to apply the *First Order Stock Value Approximation* (FOSVA). The available functions are divided in two sets: the ones related to the general approach and the ones related to the approach customized for the ATO problem. The function in the former set
 | Function           | Description                                                  |
 | ------------------ | ------------------------------------------------------------ |
-| piecewise_function | It is a function to define piecewise linear function more user friendly than [numpy.piecewise](https://numpy.org/doc/stable/reference/generated/numpy.piecewise.html). It is tought to become a lambda function after the specification of break points (argument *breaks*) and slopes (argument *slope*). |
-| fosva              | It runs the fosva algorithm for one dimensional problem. It can be used for problems with one inventory or to test the results on simple function. |
-| multi_fosva        | It runs the fosva algorithm for multi dimensional problem.   |
+| piecewise_function | It is a function to define piecewise linear function more user-friendly than [numpy.piecewise](https://numpy.org/doc/stable/reference/generated/numpy.piecewise.html). It is thought to become a lambda function after the specification of breakpoints (argument *breaks*) and slopes (argument *slope*). |
+| fosva              | It runs the fosva algorithm for one-dimensional problem. It can be used for problems with one inventory or to test the results on simple functions. |
+| multi_fosva        | It runs the fosva algorithm for multi-dimensional problems.   |
 
 Moreover, in this last set there are the functions: update_nu and _run_fosva_iteration which  arrange the dimension of the vector of slopes (*nu*) and run  one iteration of the fosva algorithm, respectively.
 Instead, the function in the latter set are
 
 | Function           | Description                                                  |
 | ------------------ | ------------------------------------------------------------ |
-| compute_gradient   | It computes the values of the TS to compute the left and right slope. |
-| run_multifosva_ato | It implements the FOSVA algorithm for the ATO problem. Basically it defines the way to compute the gradient and to generate random points that will be used by the general FOSVA algorithm. |
+| compute_gradient   | It computes the values of the TS to compute the left and right slopes. |
+| run_multifosva_ato | It implements the FOSVA algorithm for the ATO problem. Basically, it defines the way to compute the gradient and to generate random points that will be used by the general FOSVA algorithm. |
 
 Please, notice that by adapting these two functions it is possible to apply FOSVA to other problems.
 
