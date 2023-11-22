@@ -12,12 +12,12 @@ Multi-Stage
 @article{gioia2023On,
 	author = {Daniele Giovanni Gioia, Edoardo Fadda and Paolo Brandimarte},
 	journal = {International Journal of Production Research},
-  publisher={Taylor \& Francis},
+	publisher={Taylor \& Francis},
 	pages = {1-19},
 	title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
 	volume = {TBA},
-  doi = {https://doi:10.1080/00207543.2023.2283570},
-  note = {Available on arXiv:2210.00491},
+  	doi = {https://doi:10.1080/00207543.2023.2283570},
+  	note = {Available on arXiv:2210.00491},
 	year = {2023}}
 
 ```
