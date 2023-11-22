@@ -9,16 +9,17 @@ The code comprises several classes and two main(s) as examples. Those are suppor
 Multi-Stage
 
 ```Bibtex
-@misc{https://doi.org/10.48550/arxiv.2210.00491,
-  doi = {10.48550/ARXIV.2210.00491},
-  url = {https://arxiv.org/abs/2210.00491},
-  author = {Gioia, Daniele Giovanni and Fadda, Edoardo and Brandimarte, Paolo},
-  keywords = {Optimization and Control (math.OC), FOS: Mathematics, FOS: Mathematics},
-  title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
-  publisher = {arXiv},
-  year = {2023},
-  copyright = {Creative Commons Attribution Non Commercial Share Alike 4.0 International}
-}
+@article{gioia2023On,
+	author = {Daniele Giovanni Gioia, Edoardo Fadda and Paolo Brandimarte},
+	journal = {International Journal of Production Research},
+  publisher={Taylor \& Francis},
+	pages = {1-19},
+	title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
+	volume = {TBA},
+  doi = {https://doi:10.1080/00207543.2023.2283570},
+  note = {Available on arXiv:2210.00491},
+	year = {2023}}
+
 ```
 
 #### **PLEASE NOTE THAT IN THIS VERSION OF THE CODE ALL PROBLEMS ARE CONTINUOUS. THE MULTI-STAGE ARTICLE CONSIDERS INTEGER VERSIONS WITH LONGER COMPUTATION TIMES.**
