@@ -31,9 +31,11 @@ Two-Stage
   year = {2023},
   publisher = {Springer Cham},
   editor = {Cappanera, Paola and Lapucci, Matteo and Schoen, Fabio and Sciandrone, Marco and Tardella, Fabio and Visintin, Filippo},
+  series={{AIRO} Springer Series},
   author = {Edoardo Fadda and Daniele Giovanni Gioia and Paolo Brandimarte},
   title = {Risk-averse Approaches for a Two-Stage Assembly-to-Order Problem.},
   booktitle = {Optimization and Decision Science: Operations Research, Inclusion and Equity},
+  pages = {147--156},
   isbn = {978-3-031-28863-0},
   doi = {https://doi.org/10.1007/978-3-031-28863-0_13}
 }
