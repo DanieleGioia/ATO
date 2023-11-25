@@ -2,7 +2,7 @@
 
 This library simulates and optimizes **Two-Stage** and **Multi-Stage** policies for *Assemble To Order (ATO)* problems. Specifically, this strategy allows the manufacture of components under demand uncertainty, while assembling end items only after demand is realized.
 
-The code comprises several classes and two main(s) as examples. Those are supported by two different articles that we recommend to cite in case you use the library.
+The code comprises several classes and two main(s) as examples. Those are supported by two different articles that we recommend citing in case you use the library.
 
 ## Citing Us
 
@@ -17,10 +17,10 @@ Multi-Stage
 	title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
 	volume = {TBA},
   	doi = {https://doi:10.1080/00207543.2023.2283570},
-  	note = {Available on arXiv:2210.00491},
 	year = {2023}}
 
 ```
+A preprint is available on arXiv:2210.00491
 
 #### **PLEASE NOTE THAT IN THIS VERSION OF THE CODE ALL PROBLEMS ARE CONTINUOUS. THE MULTI-STAGE ARTICLE CONSIDERS INTEGER VERSIONS WITH LONGER COMPUTATION TIMES.**
 
