@@ -9,15 +9,16 @@ The code comprises several classes and two main(s) as examples. Those are suppor
 Multi-Stage
 
 ```Bibtex
-@article{gioia2023On,
+@article{gioia2024,
 	author = {Daniele Giovanni Gioia, Edoardo Fadda and Paolo Brandimarte},
 	journal = {International Journal of Production Research},
 	publisher={Taylor \& Francis},
-	pages = {1-19},
+	pages = {5108-5126},
 	title = {Rolling horizon policies for multi-stage stochastic assemble-to-order problems},
-	volume = {TBA},
-  	doi = {https://doi:10.1080/00207543.2023.2283570},
-	year = {2023}}
+	volume = {62},
+	number={14},
+  	doi = {10.1080/00207543.2023.2283570},
+	year = {2024}}
 
 ```
 A preprint is available on arXiv:2210.00491
@@ -37,7 +38,7 @@ Two-Stage
   booktitle = {Optimization and Decision Science: Operations Research, Inclusion and Equity},
   pages = {147--156},
   isbn = {978-3-031-28863-0},
-  doi = {https://doi.org/10.1007/978-3-031-28863-0_13}
+  doi = {10.1007/978-3-031-28863-0_13}
 }
 ```
 
