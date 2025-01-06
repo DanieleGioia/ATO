@@ -36,15 +36,16 @@ class Fast_forward_W2(Scenario_reducer):
         for u in J_set:
             tmpProb = probs_initial[u]
             probs_initial[u] = 0 #set zero that element
-            zeta[u] = probs_initial @ dist_mtrx[:,u]
+            zeta[u] = probs_initial @ dist_mtrx[u,:]
             probs_initial[u] = tmpProb #restore the element
         ##first indx
-        indxR.append(np.nanargmin(zeta))
+        u = np.nanargmin(zeta)
+        indxR.append(u)
         ####
         ##Step i
         for it in range(n_scenarios-1): #we already did the first
             #update the distance matrix
-            dist_mtrx[np.ix_(J_set, J_set)] = np.minimum(dist_mtrx[np.ix_(J_set, J_set)], dist_mtrx[J_set, u])
+            dist_mtrx[np.ix_(J_set, J_set)] = np.minimum(dist_mtrx[np.ix_(J_set, J_set)], dist_mtrx[u, J_set])
             zeta = np.zeros(self.N) #new zeta
             probs_initial[indxR] = 0 #set zero chosen elements
             #new J_set
@@ -52,11 +53,12 @@ class Fast_forward_W2(Scenario_reducer):
             for u in J_set:
                 tmpProb = probs_initial[u]
                 probs_initial[u] = 0 #set zero that element
-                zeta[u] = probs_initial @ dist_mtrx[:,u]
+                zeta[u] = probs_initial @ dist_mtrx[u,:]
                 probs_initial[u] = tmpProb #restore the element
             #new selection
             zeta[indxR] = np.nan #eliminated indx
-            indxR.append(np.nanargmin(zeta))
+            u = np.nanargmin(zeta)
+            indxR.append(u)
         J_set = np.setdiff1d(J_set,indxR[-1])#last removed
         #### 
         ##Probabilities redistribution
